@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -16,12 +16,24 @@ const dummyChordSheet = [
 export default function PlayPage() {
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleStartPractice = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/autumn_leaves.m4a');
+    }
+    audioRef.current.play();
     setIsPlaying(true);
-    // TODO: Implement audio playback
     // TODO: Implement chord scrolling animation
     // TODO: Implement microphone input and analysis
+  };
+
+  const handleStopPractice = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setIsPlaying(false);
   };
 
   const getDifficultyButtonClass = (level: Difficulty) => {
@@ -93,7 +105,7 @@ export default function PlayPage() {
           </div>
           <p className="mt-4 text-lg">Listen and play along!</p>
           <button
-            onClick={() => setIsPlaying(false)}
+            onClick={handleStopPractice}
             className="mt-8 px-8 py-3 bg-red-700 hover:bg-red-600 rounded-full text-xl font-bold shadow-lg"
           >
             Stop
